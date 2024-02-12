@@ -1,0 +1,14 @@
+[run]
+branch = True
+omit =
+    postie/migrations/*
+    postie/tests/*
+    .venv/*
+    postie/admin.py
+    setup.py
+    runtest.py
+    manage.py
+
+
+[report]
+ignore_errors = True

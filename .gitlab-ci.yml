@@ -1,0 +1,72 @@
+image: python:3.7
+
+services:
+  - postgres:latest
+
+variables:
+  POSTGRES_DB: database_name
+  POSTGRES_USER: runner
+  POSTGRES_PASSWORD: ""
+  POSTGRES_HOST_AUTH_METHOD: trust
+
+cache:
+  paths:
+    - ~/.cache/pip/
+
+stages:
+  - test
+  - build
+  - publish
+
+before_script:
+  - pip install pipenv
+  - pip install -r requirements.txt
+  - pip install tox
+
+python37:
+  image: python:3.7
+  stage: test
+  script: tox -epy37-django21
+
+coverage:
+  stage: test
+  variables:
+    DATABASE_URL: "postgresql://$POSTGRES_USER:@postgres:5432/$POSTGRES_DB"
+  script:
+    - pip install coverage
+    - coverage run --source='.' manage.py test
+    - tox -e py37-django21
+    - coverage html
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+  artifacts:
+    paths:
+      - htmlcov
+    expire_in: 1 day
+
+docs:
+  stage: build
+  script:
+    - pip install -r requirements.txt
+    - pip install sphinx
+    - cd docs/
+    - rm -rf build/
+    - make html
+  artifacts:
+    paths:
+      - docs/build/html/
+    expire_in: 1 day
+
+pages:
+  stage: publish
+  script:
+    - mkdir -p public/coverage
+    - cp -fr docs/build/html/* public/
+    - cp -fr htmlcov/* public/coverage/
+  dependencies:
+    - coverage
+    - docs
+  artifacts:
+    paths:
+      - public
+  only:
+    - master

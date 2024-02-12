@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==2.1"
+django-ckeditor = "*"
+"django-codemirror2" = "*"
+django-model-utils = "*"
+celery = "*"
+django-parler = "*"
+tilda-wrapper-api = "*"
+django-solo = "*"
+
+[dev-packages]
+"flake8" = "*"
+"autopep8" = "*"
+"pep8" = "*"
+pylint = "*"
+mypy = "*"
+django-dynamic-fixture = "*"
+tox = "*"
+bandit = "*"
+coverage = "*"
+psycopg2-binary = "*"
+django-environ = "*"
+
+[requires]
+python_version = "3.7"
